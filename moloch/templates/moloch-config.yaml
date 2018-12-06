@@ -23,7 +23,7 @@ data:
     # elasticsearch VIP, a different elasticsearch node in the cluster can be specified
     # for each Moloch node to help spread load on high volume clusters
     elasticsearch=data-service:9200
-    
+
     # How often to create a new elasticsearch index. hourly,hourly6,daily,weekly,monthly
     # Changing the value will cause previous sessions to be unreachable
     rotateIndex=daily
@@ -44,7 +44,7 @@ data:
     # Changing the value will make all previously stored passwords no longer work.
     # Make this RANDOM, you never need to type in
     passwordSecret = {{ .Values.molochConfig.env.encryptpw }}
-    
+
     # Use a different password for S2S communication then passwordSecret.
     # Must be in default section.  Make this RANDOM, you never need to type in
     #serverSecret=
@@ -137,10 +137,10 @@ data:
     ouiFile = /data/moloch/etc/oui.txt
 
     # User to drop privileges to. The pcapDir must be writable by this user or group below
-    dropUser=nobody
+    dropUser=moloch
 
     # Group to drop privileges to. The pcapDir must be writable by this group or user above
-    dropGroup=daemon
+    dropGroup=moloch
 
     # Semicolon ';' seperated list of tags which once capture sets for a session causes the
     # remaining pcap from being saved for the session.  It is likely that the initial packets

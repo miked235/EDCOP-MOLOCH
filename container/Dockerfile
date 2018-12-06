@@ -3,7 +3,8 @@ ENV VERSION=1.5.3
 RUN yum -y update && yum -y install epel-release && \
 	yum -y install jq wget nodejs bzip2 curl net-tools fontconfig freetype freetype-devel fontconfig-devel libyaml-devel libpcap-devel libstdc++ ethtool pcre tcpdump pcre-devel libyaml pkgconfig flex bison gcc-c++ zlib-devel e2fsprogs-devel openssl-devel file-devel make gettext libuuid-devel perl-JSON bzip2-libs bzip2-devel perl-libwww-perl libpng-devel xz libffi-devel GeoIP vim && \
 	wget https://files.molo.ch/builds/centos-7/moloch-$VERSION-1.x86_64.rpm && \
-	rpm -i moloch-$VERSION-1.x86_64.rpm
+	rpm -i moloch-$VERSION-1.x86_64.rpm && \
+	adduser --system --no-create-home --group moloch
 
 ADD scripts /data/moloch/
 
@@ -22,7 +23,10 @@ RUN chmod +x /data/moloch/*.sh && \
 	yum clean -y all
 
 ADD etc/config.ini /data/moloch/etc/config.ini
-RUN chmod 755 /data/moloch/etc/config.ini
+
+RUN chown -R moloch:moloch /data/moloch/etc/ && \
+	chown -R moloch:moloch /data/moloch/raw && \
+	chown -R moloch:moloch /data/moloch/logs
 
 EXPOSE 8005
 

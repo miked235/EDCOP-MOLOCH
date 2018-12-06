@@ -89,18 +89,23 @@ spec:
             memory: {{ .Values.molochConfig.limits.memory | quote }}
         volumeMounts:
         - mountPath: /data/moloch/raw
-          name: molochraw
+          name: moloch-raw
+        - mountPath: /data/moloch/logs
+          name: moloch-logs
         - mountPath: /tmp/moloch/config.ini
           subPath: config.ini
           name: moloch-config
 
       volumes:
-      - name: molochraw
+      - name: moloch-raw
         hostPath:
           path: {{ .Values.volumes.raw }}
+      - name: moloch-logs
+        hostPath:
+          path: {{ .Values.volumes.logs }}
       - name: moloch-config
         configMap:
-          name: {{ template "moloch.fullname" . }}-config   
+          name: {{ template "moloch.fullname" . }}-config
       restartPolicy: Always
       {{- if .Values.networks.useHostNeworking }}
       hostNetwork: true

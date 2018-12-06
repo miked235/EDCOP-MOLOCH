@@ -11,15 +11,19 @@ networks:
   # See github.com/sealingtech/EDCOP-CONFIGURESENSORS for more information
   useHostNeworking: false
 volumes:
-  # Persistent data location on the host to store Moloch's data
+  # Persistent data location on the host to store Moloch's data & logs
   raw: /EDCOP/bulk/moloch/raw
+  logs: /EDCOP/bulk/moloch/raw
 nodeSelector:
   worker: sensor
   viewer: infrastructure
 ingress:
   # Enter the FQDN of your host
   host: moloch.physical.edcop.io
-molochConfig:  
+molochConfig:
+  # runAsUser and fsGroup dictate the UID/GID of the moloch user on the host
+  runAsUser: 2001
+  fsGroup: 2002
   # Worker nodes refers to the number of worker nodes you have
   workerNodes: 1
   # These settings impact Moloch's overall performance
@@ -28,9 +32,9 @@ molochConfig:
     maxStreams: 1000000
     maxPacketsInQueue: 200000
     maxPackets: 10000           # Moloch writes a session record after this many
-    packetThreads: 1            
+    packetThreads: 1
     pcapWriteSize: 262144       # Buffer size when writing pcap files
-    tpacketv3Threads: 2         
+    tpacketv3Threads: 2
   env:
     # Admin user for the web interface
     adminpw: supersecretpw
@@ -41,5 +45,5 @@ molochConfig:
     cpu: 100m
     memory: 64Mi
   limits:
-    cpu: 4 
+    cpu: 4
     memory: 8G

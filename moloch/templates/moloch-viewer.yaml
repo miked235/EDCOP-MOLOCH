@@ -29,6 +29,9 @@ spec:
       - name: moloch-viewer
         image: {{ .Values.images.moloch }}
         imagePullPolicy: Always
+        securityContext:
+          runAsUser: {{ .Values.molochConfig.runAsUser }}
+          fsGroup: {{ .Values.molochConfig.fsGroup }}
         command: ["bash", "-c", "yes | cp /tmp/moloch/config.ini /data/moloch/etc/config.ini && /data/moloch/docker-entrypoint.sh"]
         env:
         - name: ES_HOST
@@ -59,11 +62,16 @@ spec:
             cpu: {{ .Values.molochConfig.limits.cpu | quote }}
             memory: {{ .Values.molochConfig.limits.memory | quote }}
         volumeMounts:
+        - mountPath: /data/moloch/logs
+          name: moloch-logs
         - mountPath: /tmp/moloch/config.ini
           subPath: config.ini
           name: moloch-config
 
       volumes:
+      - name: moloch-logs
+        hostPath:
+          path: {{ .Values.volumes.logs }}
       - name: moloch-config
         configMap:
           name: {{ template "moloch.fullname" . }}-config
