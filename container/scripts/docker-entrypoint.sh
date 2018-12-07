@@ -1,14 +1,6 @@
 #!/bin/bash
 # Script to initialize Moloch, add a user, and run the services
 
-# Configure Moloch
-/data/moloch/bin/Configure << EOF
-$INTERFACE
-no
-$ES_HOST:9200
-$CLUSTER_PW
-EOF
-
 # Copy configmap for editing
 if [ -f /tmp/moloch/config.ini ]; then
   yes | cp /tmp/moloch/config.ini /data/moloch/etc/config.ini
@@ -32,26 +24,26 @@ STATUS6=$(curl -s -X GET "$ES_HOST:9200/sequence_v2" | jq --raw-output '.status'
 # Initialize Moloch if this is the first install
 if [ "$STATUS5" = "404" ] && [ "$STATUS6" = "404" ]
 then
-  echo "Initializing Moloch indices..."
+  echo "First time install, initializing Moloch indices..."
   echo INIT | /data/moloch/db/db.pl http://$ES_HOST:9200 init
   /data/moloch/bin/moloch_add_user.sh admin "Admin User" $ADMIN_PW --admin
-  /data/moloch/bin/moloch_update_geo.sh
+else
+  echo "Moloch has already been initialized, skipping index initialization..."
 fi
-
-chmod a+rwx /data/moloch/raw /data/moloch/logs
 
 # Deploy Moloch as a sensor node
 if [ "$SENSOR" = "true" ]
 then
-  echo "Starting Moloch capture and viewer..."
+  echo "Capture node selected, configuring interface..."
   /data/moloch/bin/moloch_config_interfaces.sh
+  echo "Starting Moloch capture and viewer..."
   cd /data/moloch
   nohup /data/moloch/bin/moloch-capture -c /data/moloch/etc/config.ini >> /data/moloch/logs/capture.log 2>&1 &
   cd /data/moloch/viewer
   /data/moloch/bin/node viewer.js -c /data/moloch/etc/config.ini >> /data/moloch/logs/viewer.log 2>&1
 # Viewer only node
 else
-  echo "Starting Moloch viewer..."
+  echo "Viewer node selected, starting Moloch viewer..."
   cd /data/moloch/viewer
   /data/moloch/bin/node viewer.js -c /data/moloch/etc/config.ini >> /data/moloch/logs/viewer.log 2>&1
 fi
