@@ -32,7 +32,7 @@ spec:
         securityContext:
           runAsUser: {{ .Values.molochConfig.runAsUser }}
           fsGroup: {{ .Values.molochConfig.fsGroup }}
-        command: ["bash", "-c", "yes | cp /tmp/moloch/config.ini /data/moloch/etc/config.ini && /data/moloch/docker-entrypoint.sh"]
+        #command: ["bash", "-c", "yes | cp /tmp/moloch/config.ini /data/moloch/etc/config.ini && /data/moloch/docker-entrypoint.sh"]
         env:
         - name: NAMESPACE
           valueFrom:

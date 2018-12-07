@@ -9,8 +9,14 @@ $ES_HOST:9200
 $CLUSTER_PW
 EOF
 
+# Copy configmap for editing
+if [ -f /tmp/moloch/config.ini ]; then
+  yes | cp /tmp/moloch/config.ini /data/moloch/etc/config.ini
+fi
+
 # Insert interface environment variable into config
 sed -i 's/${INTERFACE}/'$INTERFACE' /g' /data/moloch/etc/config.ini
+sed -i 's/${POD_NAME}/'$POD_NAME' /g' /data/moloch/etc/config.ini
 
 # Check to see if Elasticsearch is reachable
 echo "Trying to reach Elasticsearch..."
