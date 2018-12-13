@@ -35,7 +35,10 @@ fi
 if [ "$SENSOR" = "true" ]
 then
   echo "Capture node selected, configuring interface..."
-  /data/moloch/bin/moloch_config_interfaces.sh
+  /sbin/ethtool -G $INTERFACE rx 4096 tx 4096 || true
+  for i in rx tx sg tso ufo gso gro lro; do
+    /sbin/ethtool -K $INTERFACE $i off || true
+  done
   echo "Starting Moloch capture and viewer..."
   cd /data/moloch
   nohup /data/moloch/bin/moloch-capture -c /data/moloch/etc/config.ini >> /data/moloch/logs/capture.log 2>&1 &
